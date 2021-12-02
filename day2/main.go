@@ -20,10 +20,17 @@ func main() {
 	}
 	fmt.Println(int(part1Return))
 
+	part2Return, err := part2(&items)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(part2Return)
+
 }
 
-func part1(movements *[]string) (float64, error) {
-	movementMap := map[string]float64{
+func part1(movements *[]string) (int, error) {
+	movementMap := map[string]int{
 		"forward": 0,
 		"up":      0,
 		"down":    0,
@@ -38,10 +45,42 @@ func part1(movements *[]string) (float64, error) {
 		if err != nil {
 			return 0, err
 		}
-		movementMap[direction] += float64(units)
+		movementMap[direction] += int(units)
 	}
 
-	depth := movementMap["down"] - movementMap["up"]
+	return (movementMap["forward"] * (movementMap["down"] - movementMap["up"])), nil
+}
 
-	return (movementMap["forward"] * depth), nil
+func part2(movements *[]string) (int, error) {
+	movementMap := map[string]int{
+		"forward": 0,
+		"aim":     0,
+		"depth":   0,
+	}
+
+	for _, movement := range *movements {
+		splitted := strings.Split(movement, " ")
+
+		direction := splitted[0]
+
+		units, err := common.ConvertToInt(splitted[1])
+		if err != nil {
+			return 0, err
+		}
+
+		if direction == "down" {
+			movementMap["aim"] += units
+		}
+
+		if direction == "up" {
+			movementMap["aim"] -= units
+		}
+
+		if direction == "forward" {
+			movementMap["forward"] += units
+			movementMap["depth"] += movementMap["aim"] * units
+		}
+	}
+
+	return (movementMap["forward"] * movementMap["depth"]), nil
 }
