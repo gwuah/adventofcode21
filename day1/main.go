@@ -1,62 +1,33 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
-	"strconv"
+
+	"github.com/gwuah/adventofcode21/common"
 )
 
 func main() {
-	items, err := readInput("./input.txt")
+	stringItems, err := common.ReadInput("./input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	part1Return := part1(&items)
+	numberItems := []int{}
+	for _, item := range stringItems {
+		converted, err := common.ConvertToInt(item)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		numberItems = append(numberItems, converted)
+	}
+
+	part1Return := part1(&numberItems)
 	fmt.Println(part1Return)
 
-	part2Return := part2(&items)
+	part2Return := part2(&numberItems)
 	fmt.Println(part2Return)
-}
-
-func convertToInt(s string) (int, error) {
-	return strconv.Atoi(s)
-}
-
-func arraySum(input []int) int {
-	total := 0
-	for _, num := range input {
-		total += num
-	}
-
-	return total
-}
-
-func readInput(path string) ([]int, error) {
-	items := []int{}
-
-	file, err := os.Open(path)
-	if err != nil {
-		return items, err
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		converted, err := convertToInt(scanner.Text())
-		if err != nil {
-			return items, err
-		}
-		items = append(items, converted)
-	}
-
-	if err := scanner.Err(); err != nil {
-		return items, err
-	}
-
-	return items, nil
 }
 
 func part1(input *[]int) int {
@@ -88,7 +59,7 @@ func part2(input *[]int) int {
 		left := (*input)[i+1 : i+4]
 		right := (*input)[i+2 : i+5]
 
-		if arraySum(right) > arraySum(left) {
+		if common.ArraySum(right) > common.ArraySum(left) {
 			incrementCount++
 		}
 		left = right
